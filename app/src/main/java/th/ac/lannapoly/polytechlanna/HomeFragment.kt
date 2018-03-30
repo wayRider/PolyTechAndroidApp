@@ -10,6 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.firebase.ui.database.FirebaseListAdapter
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -46,17 +49,17 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_home, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val database = FirebaseDatabase.getInstance()
-        myRef = database.getReference("news")
+        myRef = database.getReference("newses")
 
         myRef.addValueEventListener(object:ValueEventListener{
             override fun onCancelled(p0: DatabaseError?) {
@@ -70,6 +73,7 @@ class HomeFragment : Fragment() {
                         val news = newsSnapshot.getValue(News::class.java)
                         if (news != null) {
                             newses.add(news)
+                            Log.i("xxx",news.title)
                         }
                     }
                 }
@@ -77,10 +81,25 @@ class HomeFragment : Fragment() {
 
         })
 
+        adapter = object:FirebaseListAdapter<News>(context,News::class.java,R.layout.row_news,myRef){
 
-        button.setOnClickListener{
-            myRef.setValue(editText.text.toString())
+            override fun populateView(v: View?, model: News?, position: Int) {
+                val titleTextView = v!!.findViewById<TextView>(R.id.titleTextView)
+                titleTextView.text = model!!.title
+
+                val imageView = v!!.findViewById<ImageView>(R.id.imageView)
+                Glide.with(context!!).load(model!!.imgUrl).into(imageView)
+            }
         }
+
+        listView.adapter = adapter
+
+
+
+
+//        button.setOnClickListener{
+//            myRef.setValue(editText.text.toString())
+//        }
 
 //        adapter = FirebaseListAdapter<News>(context,News::class.java,android.R.layout.simple_list_item_1,myRef){
 //

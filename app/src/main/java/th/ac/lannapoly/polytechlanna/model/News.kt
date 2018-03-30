@@ -6,5 +6,5 @@ package th.ac.lannapoly.polytechlanna.model
 class News {
     var title: String? = null
     var url: String? = null
-    var imageUrl: String? = null
+    var imgUrl: String? = null
 }
